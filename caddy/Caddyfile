@@ -1,0 +1,10 @@
+{
+	# Disable automatic HTTPS
+	auto_https off
+}
+
+# Serve static files from the default folder
+:80 {
+	root * /var/www/html
+	file_server
+}

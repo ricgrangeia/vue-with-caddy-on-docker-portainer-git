@@ -1,0 +1,29 @@
+version: '3.9'
+
+networks:
+  internal:
+    name: ${EXTERNAL_MAIN_NETWORK}
+    external: true
+  proxy:
+    name: ${EXTERNAL_PROXY_NETWORK}
+    external: true
+
+services:
+  caddy:
+    container_name: ${CONTAINER_NAME}
+    build:
+      context: .
+      dockerfile: ./caddy.dockerfile
+    restart: always
+    pull_policy: build
+    ports:
+      - 8444:80
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.${CONTAINER_TRAEFIK_NAME}_route.rule=Host(`${DOMAIN_HOST_NAME}`)
+      - traefik.http.services.${CONTAINER_TRAEFIK_NAME}_route.loadbalancer.server.port=80
+      - traefik.http.routers.${CONTAINER_TRAEFIK_NAME}_route.tls=true
+      - traefik.http.routers.${CONTAINER_TRAEFIK_NAME}_route.tls.certresolver=leresolver
+    networks:
+      - internal
+      - proxy
